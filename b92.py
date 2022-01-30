@@ -43,7 +43,7 @@ class QUACKD:
         self.parity_checks = [0]
         self.block_sizes = []
 
-        self.errors = [-1]
+        self.errors = []
 
     def create_calibration_matrix(self, qubits, qubit_list):
         """
@@ -238,6 +238,7 @@ class QUACKD:
         self.unshuffle(iter_n, self.corrected_digits)
 
     def correct_bobs_digits(self, num_cascade_iters=5):
+        self.errors = [self.Q]
         for c in range(num_cascade_iters):
             self.cascade(c)
             error = np.mean(
@@ -255,7 +256,7 @@ class QUACKD:
 
 
 quackd = QUACKD(
-    "0010001111100001001001011000",
+    "010001011111110110111001010101",
     n_shots=100,
     qi_backend=QI.get_backend("QX single-node simulator"),
 )
