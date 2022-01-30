@@ -19,9 +19,11 @@ class B92:
         backend=Aer.get_backend('aer_simulator'),
         **execute_kwargs
     ):
+        self.pbar = pbar
+        self._log_pbar('Started QKD protocol')
+
         # circuit
         self.alice_string = alice_string
-        self.pbar = pbar
         self.N_5 = len(self.alice_string)
         self.bob_bases = np.random.choice(['X', 'Z'], self.N_5)
         self.meas_err_mitig = meas_err_mitig
@@ -278,7 +280,6 @@ class B92:
 
 
     def get_key_pair(self):
-        self._log_pbar('Started QKD protocol')
         corrected_digits = self.generate_corrected_key()
         self._log_pbar('Finished QKD protocol')
         return ''.join(self.sent_digits), corrected_digits

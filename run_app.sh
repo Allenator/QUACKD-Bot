@@ -1,6 +1,11 @@
 #!/bin/bash
 
 PYTHON_PATH="python3"
-TOKENS_PATH="credentials/slack.json"
+SLACK_TOKENS_PATH="credentials/slack.json"
+QI_AUTH_PATH="credentials/qi.json"
 
-${PYTHON_PATH} quackd/app.py ${TOKENS_PATH}
+# Specify backend for B92 protocol
+# Available options are "aer", "qi_sim", "qi_starmon"
+BACKEND="qi_sim"
+
+${PYTHON_PATH} quackd/app.py ${SLACK_TOKENS_PATH} ${BACKEND} --qi_auth_path ${QI_AUTH_PATH}
