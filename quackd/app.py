@@ -173,7 +173,7 @@ def _parse_event(event):
     src_id = event['user']
     src_tag = _tag(TYPE_USER, src_id)
 
-    regex = r'<(@|#)([UC][A-Z0-9]{10})\|?(>)'
+    regex = r'<(@|#)([UC][A-Z0-9]{10})\|?.*?(>)'
 
     text_orig = html.unescape(event['text'])
     res = re.search(regex, text_orig)
