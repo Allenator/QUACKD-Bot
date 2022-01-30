@@ -33,7 +33,8 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 ### Project structure
 
 - `credentials/`: Templates for credential storage for various services
-- `figures`: Project figures
+- `figures/`: Project demonstration figures
+- `videos/`: Project demonstration videos
 - `noise-rb/`: Code and data for performing noise characterization via randomized benchmarking (RB)
 - `qkd-b92/`: Tutorials that detail B92 and postprocessing steps used for our QKD implementation
 - `quackd/`: Source code for QUACKD-Bot
