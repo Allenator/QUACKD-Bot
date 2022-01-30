@@ -2,13 +2,14 @@ import argparse
 import html
 import re
 
+import numpy as np
 from slack_bolt import App # type:ignore
 from slack_bolt.adapter.socket_mode import SocketModeHandler # type:ignore
 
 from globals import *
 from progress import SlackProgress
 from keychain import KeyChain
-from utils import load_slack_tokens
+from utils import load_slack_tokens, sha3_digest
 
 
 parser = argparse.ArgumentParser()
@@ -23,15 +24,12 @@ app = App(token=slack_bot_token)
 kc_global = KeyChain()
 
 
-def _parse_command(command, with_key):
+def _parse_command(command):
     src_id = command['user_id']
     src_name = command['user_name']
     src_tag = f'<{TYPE_USER}{src_id}|{src_name}>'
 
-    if with_key:
-        regex = r'<(@|#)([UC][A-Z0-9]{10})\|(.*?)> `(.+?)`'
-    else:
-        regex = r'<(@|#)([UC][A-Z0-9]{10})\|(.*?)>'
+    regex = r'<(@|#)([UC][A-Z0-9]{10})\|(.*?)> `(.+?)`'
 
     res = re.search(regex, html.unescape(command['text']))
 
@@ -46,16 +44,11 @@ def _parse_command(command, with_key):
         dst_id = res.groups()[1]
         dst_name = res.groups()[2]
         dst_tag = f'<{dst_type}{dst_id}|{dst_name}>'
-        if with_key:
-            key = res.groups()[3]
+        key = res.groups()[3]
 
-    if with_key:
-        return (src_id, src_name, src_tag), \
-            (dst_type, dst_id, dst_name, dst_tag), \
-            key
-    else:
-        return (src_id, src_name, src_tag), \
-            (dst_type, dst_id, dst_name, dst_tag)
+    return (src_id, src_name, src_tag), \
+        (dst_type, dst_id, dst_name, dst_tag), \
+        key
 
 
 @app.command('/qkd')
@@ -64,19 +57,22 @@ def qkd(ack, respond, command):
 
     (src_id, _, src_tag), \
         (dst_type, dst_id, _, dst_tag), \
-        key = _parse_command(command, True) # type:ignore
+        key_orig = _parse_command(command)
 
     if dst_id is None:
         respond(f'Usage: /qkd @user/#channel `key`')
     else:
-        respond(f'Sharing key `{key}` to {dst_tag}...')
+        h_key = sha3_digest(key_orig)
+        key = bin(int(h_key, 16))[2:][:KEY_INIT_SIZE]
+
+        respond(f'Sharing key `{key_orig}` to {dst_tag} as `{key}` ({KEY_INIT_SIZE} bits)')
 
         if dst_type == TYPE_CHANNEL:
             members = app.client.conversations_members(channel=dst_id)['members']
         elif dst_type == TYPE_USER:
             members = [dst_id]
         else:
-            raise NotImplementedError(f'Unknown key type {dst_type}')
+            raise NotImplementedError(f'Unknown destination type {dst_type}')
 
         sp = SlackProgress(app, src_id)
         pbar = sp.new(total=N_PBAR_ITEMS)
@@ -84,13 +80,13 @@ def qkd(ack, respond, command):
 
         sent_key, recv_key = kc_global.add(src_id, members, src_id, dst_id, key, pbar)
 
-        if len(sent_key) >= N_KEY_MIN_BITS:
+        if len(sent_key) >= KEY_MIN_SIZE:
             respond(f'Stored key `{sent_key}` after reconciliation')
         else:
             respond(f'Shared key `{sent_key}` is discarded '
-                f'(minimum length of {N_KEY_MIN_BITS} required)')
+                f'(minimum length of {KEY_MIN_SIZE} required)')
 
-        if len(recv_key) >= N_KEY_MIN_BITS:
+        if len(recv_key) >= KEY_MIN_SIZE:
             for m in members:
                 app.client.chat_postMessage(
                     channel=m,
@@ -101,7 +97,7 @@ def qkd(ack, respond, command):
                 app.client.chat_postMessage(
                     channel=m,
                     text=f'Received key `{recv_key}` from {src_tag} to {dst_tag} is dicarded '
-                        f'(minimum length of {N_KEY_MIN_BITS} required)'
+                        f'(minimum length of {KEY_MIN_SIZE} required)'
                 )
 
 
@@ -135,28 +131,12 @@ def kc(ack, respond, command):
                     dst_tag = f'<{TYPE_USER}{dst_id}|{dst_name}>'
                 else:
                     raise ValueError(f'ID "{dst_id}" contains an invalid prefix')
+                is_equal, h_val, _ = kc_global.validate(src_id, dst_id, key)
+                repr_equal = '✅' if is_equal else '❌'
                 resp_idx += 1
-                resp += f'\n└ {resp_idx}. {src_tag} → {dst_tag} : `{key}` @ {ts}'
+                resp += f'\n└ {resp_idx}. {src_tag} ➡️ {dst_tag} : '\
+                    f'🔑 `{key}` {repr_equal} {h_val} ⏱️ {ts}'
             respond(resp)
-
-
-# @app.command('/query')
-# def query(ack, respond, command):
-#     ack()
-
-#     (src_id, _, src_tag), \
-#         (_, dst_id, _, dst_tag) = _parse_command(command, False) # type:ignore
-
-#     if dst_id is None:
-#         respond(f'Usage: /query @user/#channel')
-#     else:
-#         key = kc_global.query(src_id, src_id, dst_id)
-#         print(kc_global.keychain)
-
-#         if key is None:
-#             respond(f'Cannot find a key from {src_tag} to {dst_tag}.')
-#         else:
-#             respond(f'The shared key from {src_tag} to {dst_tag} is `{key}`.')
 
 
 if __name__ == '__main__':

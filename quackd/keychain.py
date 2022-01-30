@@ -2,8 +2,8 @@ import copy
 
 from b92 import B92
 
-from globals import N_KEY_MIN_BITS
-from utils import timestamp
+from globals import KEY_MIN_SIZE
+from utils import sha3_digest, timestamp
 
 
 class KeyChain:
@@ -13,9 +13,9 @@ class KeyChain:
 
     def add(self, host, members, src, dst, key, pbar):
         sent_key, recv_key = self.qkd(key, pbar)
-        if len(sent_key) >= N_KEY_MIN_BITS:
+        if len(sent_key) >= KEY_MIN_SIZE:
             self.enroll(host, src, dst, sent_key)
-            if len(recv_key) >= N_KEY_MIN_BITS:
+            if len(recv_key) >= KEY_MIN_SIZE:
                 for m in members:
                     self.enroll(m, src, dst, recv_key)
         return sent_key, recv_key
@@ -32,7 +32,18 @@ class KeyChain:
         if host not in self.keychain:
             return None
         idx = (src, dst)
-        return self.keychain[host].get(idx)
+        return self.keychain[host].get(idx, (None, None))
+
+
+    def validate(self, src, dst, key):
+        h_val = sha3_digest(key)
+        sent_key = self.query(src, src, dst)
+
+        if sent_key is not None:
+            h_sent = sha3_digest(sent_key[0])
+            return h_val == h_sent, h_val[:6], h_sent[:6]
+        else:
+            return False, h_val[:6], None
 
 
     def get_keychain(self, host):
