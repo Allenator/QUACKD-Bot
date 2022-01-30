@@ -1,16 +1,13 @@
-name: iquhack
+name: quackd
 channels:
-  - plotly
   - defaults
 dependencies:
   - jupyter
+  - matplotlib
+  - numpy
   - pip
-  - plotly
-  - python=3
-  - statsmodels
+  - python=3.9
   - pip:
-    - kaleido
-    - pylatexenc
     - qiskit
     - quantuminspire
     - slack-bolt
