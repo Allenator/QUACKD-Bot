@@ -67,8 +67,12 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 
 ![crypto](figures/crypto.jpg)
 
+### Simultaneous Single-Qubit Randomized Benchmarking  Results
+
+![rb](figures/rb.png)
 
 ## Simple Video Demos
+
 - Sending a key to a person!
 
 ![Sending a key to a person](https://github.com/Allenator/iQuHack-2022/blob/main/videos/One%20Party%20Edited.gif)
