@@ -21,7 +21,7 @@ parser.add_argument(
 )
 parser.add_argument(
     'backend',
-    choices=['aer', 'qi_sim' or 'qi_starmon'],
+    choices=['aer', 'qi_sim', 'qi_starmon'],
     help='specify backend for running B92 protocol'
 )
 parser.add_argument(
