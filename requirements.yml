@@ -14,4 +14,3 @@ dependencies:
     - qiskit
     - quantuminspire
     - slack-bolt
-    - slack-progress
