@@ -13,3 +13,5 @@ dependencies:
     - pylatexenc
     - qiskit
     - quantuminspire
+    - slack-bolt
+    - slack-progress
