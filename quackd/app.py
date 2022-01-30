@@ -2,7 +2,8 @@ import argparse
 import html
 import re
 
-import numpy as np
+from qiskit import Aer
+from quantuminspire.qiskit import QI
 from slack_bolt import App # type:ignore
 from slack_bolt.adapter.socket_mode import SocketModeHandler # type:ignore
 
@@ -10,19 +11,43 @@ from crypto import encrypt_text, decrypt_text, fernet_keygen, sha3_digest
 from globals import *
 from keychain import KeyChain
 from progress import SlackProgress
-from utils import load_slack_tokens
+from utils import load_slack_tokens, set_qi_auth
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    'tokens_path',
+    'slack_tokens_path',
     help='specify path to the file containing Slack tokens'
+)
+parser.add_argument(
+    'backend',
+    choices=['aer', 'qi_sim' or 'qi_starmon'],
+    help='specify backend for running B92 protocol'
+)
+parser.add_argument(
+    '--qi_auth_path',
+    help='specify path to the file containing QI authentication details'
 )
 args = parser.parse_args()
 
-slack_app_token, slack_bot_token = load_slack_tokens(args.tokens_path)
+slack_app_token, slack_bot_token = load_slack_tokens(args.slack_tokens_path)
 app = App(token=slack_bot_token)
-kc_global = KeyChain()
+
+if args.backend == 'aer':
+    backend = Aer.get_backend('aer_simulator')
+else:
+    if args.qi_auth_path is None:
+        raise ValueError('QI authentication file must be specified '
+            'when the Aer backend is not in use')
+    set_qi_auth(args.qi_auth_path)
+    if args.backend == 'qi_sim':
+        backend = QI.get_backend('QX single-node simulator')
+    elif args.backend == 'qi_starmon':
+        backend = QI.get_backend('Starmon-5')
+    else:
+        raise ValueError(f'unknown backend specification "{args.backend}"')
+
+kc_global = KeyChain(backend=backend, **B92_DEFAULT_KWARGS)
 
 
 def _tag(type, id):

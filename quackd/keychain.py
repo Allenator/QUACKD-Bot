@@ -1,15 +1,15 @@
 import copy
 
 from b92 import B92
-
 from crypto import sha3_digest
 from globals import *
 from utils import timestamp
 
 
 class KeyChain:
-    def __init__(self):
+    def __init__(self, **b92_kwargs):
         self.keychain = {}
+        self.b92_kwargs = b92_kwargs
 
 
     def add(self, host, members, src, dst, key, pbar):
@@ -50,6 +50,6 @@ class KeyChain:
         return copy.deepcopy(self.keychain.get(host))
 
 
-    def qkd(self, key, pbar, **kwargs):
-        scheme = B92(key, pbar, **kwargs)
+    def qkd(self, key, pbar):
+        scheme = B92(key, pbar, **self.b92_kwargs)
         return scheme.get_key_pair()
