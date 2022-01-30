@@ -1,0 +1,5 @@
+TYPE_CHANNEL = '#'
+TYPE_USER = '@'
+
+PREFIX_CHANNEL = 'C'
+PREFIX_USER = 'U'
