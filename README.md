@@ -60,9 +60,9 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 
 
 ## Simple video Demos:
--![Sending a key to a person](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
--![Sending a key to a group](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
--![Checking your own keychain](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
+- [Sending a key to a person](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
+- [Sending a key to a group](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
+- [Checking your own keychain](https://drive.google.com/file/d/192sH3LDt9u8xWlws55KiyGzaaQi40gsy/view?usp=sharing)
 
 ## Other Examples and Functionality: 
 
