@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-import hashlib
 import json
 
 from qiskit import IBMQ
@@ -22,12 +21,6 @@ def load_slack_tokens(path):
     with open(path) as f:
         auth = json.load(f)
     return auth['SLACK_APP_TOKEN'], auth['SLACK_BOT_TOKEN']
-
-
-def sha3_digest(key):
-    sha3 = hashlib.sha3_512()
-    sha3.update(str.encode(key))
-    return sha3.hexdigest()
 
 
 def timestamp():

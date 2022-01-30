@@ -2,8 +2,9 @@ import copy
 
 from b92 import B92
 
-from globals import KEY_MIN_SIZE
-from utils import sha3_digest, timestamp
+from crypto import sha3_digest
+from globals import *
+from utils import timestamp
 
 
 class KeyChain:
@@ -30,13 +31,12 @@ class KeyChain:
 
     def query(self, host, src, dst):
         if host not in self.keychain:
-            return None
+            return (None, None)
         idx = (src, dst)
         return self.keychain[host].get(idx, (None, None))
 
 
-    def validate(self, src, dst, key):
-        h_val = sha3_digest(key)
+    def validate(self, h_val, src, dst):
         sent_key = self.query(src, src, dst)
 
         if sent_key is not None:

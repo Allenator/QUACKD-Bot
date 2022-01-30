@@ -84,7 +84,6 @@ class ProgressBar(object):
 
     @pos.setter
     def pos(self, val):
-        print(self._pos, val)
         if val != self._pos:
             self._pos = val
             self._update()
