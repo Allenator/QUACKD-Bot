@@ -60,11 +60,11 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 
 
 ## Simple Video Demos:
-- Sending a key to a person@
+- Sending a key to a person!
 
 ![Sending a key to a person](https://github.com/Allenator/iQuHack-2022/blob/main/videos/One%20Party.gif)
 
-- Sending a key to a group@
+- Sending a key to a group!
 
 ![Sending a key to a group](https://github.com/Allenator/iQuHack-2022/blob/main/videos/Multiple%20Parties.gif)
 
