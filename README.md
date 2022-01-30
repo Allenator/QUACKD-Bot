@@ -26,7 +26,7 @@ conda activate quackd
 ```
 to activate the virtual environment.
 
-To populate the relevant credentials, navigate to the `credentials/` directory and make a copy of the template JSON files. Rename the copies `ibm.json` `qi.json` and `slack.json` respectively. Modify the files with your own credentials.
+To populate the relevant credentials, navigate to the `credentials/` directory and make a copy of the template JSON files. Rename the copies `ibm.json`, `qi.json` and `slack.json` respectively. Modify the files with your own credentials.
 
 To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains instructions for performing B92 on various simulator and hardware backends.
 
