@@ -1,5 +1,4 @@
 import random
-import time
 import warnings
 
 warnings.filterwarnings('ignore', category=DeprecationWarning)
@@ -8,11 +7,13 @@ import numpy as np
 from qiskit import Aer, execute, QuantumRegister, QuantumCircuit
 from qiskit.ignis.mitigation.measurement import complete_meas_cal, CompleteMeasFitter
 
+from globals import *
 
 class B92:
     def __init__(
         self,
         alice_string,
+        pbar,
         meas_err_mitig=False,
         n_shots=1024,
         backend=Aer.get_backend('aer_simulator'),
@@ -20,6 +21,7 @@ class B92:
     ):
         # circuit
         self.alice_string = alice_string
+        self.pbar = pbar
         self.N_5 = len(self.alice_string)
         self.bob_bases = np.random.choice(['X', 'Z'], self.N_5)
         self.meas_err_mitig = meas_err_mitig
@@ -45,6 +47,11 @@ class B92:
         self.block_sizes = []
 
         self.errors = []
+
+
+    def _log_pbar(self, msg):
+        self.pbar.pos += 1
+        self.pbar.log(msg)
 
 
     def create_calibration_matrix(self, qubits, qubit_list):
@@ -76,8 +83,6 @@ class B92:
 
 
     def build_circuit_5(self):
-        print(1)
-        ts1 = time.time()
         if len(self.alice_string) != len(self.bob_bases):
             raise IndexError(
                 'Length of bit string and length of bases to measure in do not match.'
@@ -119,18 +124,12 @@ class B92:
             circuit.measure_all()
             circuits.append(circuit)
 
+        self._log_pbar('Synthesized B92 circuits')
         # Step 3: run the circuits on the Quantum Inspire backend and compile the results
-        print(2)
-        ts2 = time.time()
-        print(ts2 - ts1)
         qi_job = execute(circuits, backend=self.backend, shots=self.n_shots)
-        print(3)
-        ts3 = time.time()
-        print(ts3 - ts2)
+        self._log_pbar('Submitted jobs to backend')
         qi_result = qi_job.result() # type: ignore
-        print(4)
-        ts4 = time.time()
-        print(ts4 - ts3)
+        self._log_pbar('Acquired measurement results')
 
         # Step 4: collect bits based on measurement results
         for index in range(0, length, 5):
@@ -170,6 +169,7 @@ class B92:
 
                 self.inter_bit_string += bit
 
+        self._log_pbar('Sifted keys from matching bases')
         # initialize for cascade
         self.sent_digits = [self.alice_string[index] for index in self.known_indices]
         self.corrected_digits = [
@@ -268,6 +268,7 @@ class B92:
                 np.array(self.sent_digits) != np.array(self.corrected_digits)
             )
             self.errors.append(error)
+        self._log_pbar('Completed cascade information reconciliation')
 
 
     def generate_corrected_key(self):
@@ -277,18 +278,7 @@ class B92:
 
 
     def get_key_pair(self):
+        self._log_pbar('Started QKD protocol')
         corrected_digits = self.generate_corrected_key()
+        self._log_pbar('Finished QKD protocol')
         return ''.join(self.sent_digits), corrected_digits
-
-# import utils as u
-# from qiskit.providers.aer.noise import NoiseModel
-# provider = u.get_ibm_provider('../credentials/ibm.json')
-# be = provider.get_backend('ibmq_belem')
-# noise_model = NoiseModel.from_backend(be)
-# b92 = B92(
-#     '010001011111110110111001010101',
-#     n_shots=1000,
-#     meas_err_mitig=True,
-#     # noise_model=noise_model
-# )
-# print(b92.get_key_pair())  # prints corrected key pair after cascade

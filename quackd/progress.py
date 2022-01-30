@@ -50,7 +50,7 @@ class SlackProgress(object):
 
     def _makebar(self, pos):
         bar = (round(pos / 5) * chr(9608))
-        return '{} {}{}'.format(bar, pos, self.suffix)
+        return '{} {:.2f}{}'.format(bar, pos, self.suffix)
 
 
 class ProgressBar(object):
@@ -74,7 +74,7 @@ class ProgressBar(object):
     @done.setter
     def done(self, val):
         self._done = val
-        self.pos = round((val/self.total) * 100)
+        self.pos = round((val / self.total) * 100)
 
 
     @property
@@ -84,6 +84,7 @@ class ProgressBar(object):
 
     @pos.setter
     def pos(self, val):
+        print(self._pos, val)
         if val != self._pos:
             self._pos = val
             self._update()
@@ -96,4 +97,7 @@ class ProgressBar(object):
 
 
     def _update(self):
-        self._sp._update(self.channel_id, self.msg_ts, self._pos, self._msg_log)
+        self._sp._update(
+            self.channel_id, self.msg_ts,
+            self.pos / self.total * 100, self._msg_log
+        )

@@ -69,7 +69,7 @@ def qkd(ack, respond, command):
     if dst_id is None:
         respond(f'Usage: /qkd @user/#channel `key`')
     else:
-        respond(f'Sharing key `{key}` to {dst_tag}!')
+        respond(f'Sharing key `{key}` to {dst_tag}...')
 
         if dst_type == TYPE_CHANNEL:
             members = app.client.conversations_members(channel=dst_id)['members']
@@ -78,22 +78,36 @@ def qkd(ack, respond, command):
         else:
             raise NotImplementedError(f'Unknown key type {dst_type}')
 
-        recv_key = kc_global.add(src_id, members, src_id, dst_id, key)
+        sp = SlackProgress(app, src_id)
+        pbar = sp.new(total=N_PBAR_ITEMS)
+        pbar.pos = 0
 
-        for m in members:
-            app.client.chat_postMessage(
-                channel=m,
-                text=f'{src_tag} has shared a key `{recv_key}` to {dst_tag} via QKD!'
-            )
-        # sp = SlackProgress(app, src_id)
-        # for _ in sp.iter(range(10)):
-        #     time.sleep(.2)
+        sent_key, recv_key = kc_global.add(src_id, members, src_id, dst_id, key, pbar)
+
+        if len(sent_key) >= N_KEY_MIN_BITS:
+            respond(f'Stored key `{sent_key}` after reconciliation')
+        else:
+            respond(f'Shared key `{sent_key}` is discarded '
+                f'(minimum length of {N_KEY_MIN_BITS} required)')
+
+        if len(recv_key) >= N_KEY_MIN_BITS:
+            for m in members:
+                app.client.chat_postMessage(
+                    channel=m,
+                    text=f'{src_tag} has shared a key `{recv_key}` to {dst_tag} via QKD!'
+                )
+        else:
+            for m in members:
+                app.client.chat_postMessage(
+                    channel=m,
+                    text=f'Received key `{recv_key}` from {src_tag} to {dst_tag} is dicarded '
+                        f'(minimum length of {N_KEY_MIN_BITS} required)'
+                )
 
 
 @app.command('/kc')
 def kc(ack, respond, command):
     ack()
-    print(command)
 
     src_id = command['user_id']
     src_name = command['user_name']
