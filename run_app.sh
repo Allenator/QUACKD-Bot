@@ -16,7 +16,7 @@ BACKEND="aer"
 eval "$(${CONDA_PATH} shell.bash hook)"
 conda activate ${CONDA_ENV}
 
-${PYTHON_PATH} ${SCRIPT_DIR}/quackd/app.py \
+exec ${PYTHON_PATH} ${SCRIPT_DIR}/quackd/app.py \
     ${SLACK_TOKENS_PATH} ${BACKEND} \
     --qi_auth_path ${QI_AUTH_PATH} \
     --keychain_path ${KEYCHAIN_PATH}
