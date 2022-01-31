@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONDA_PATH="conda"
+CONDA_PATH="/opt/miniconda3/condabin/conda"
 CONDA_ENV="quackd"
 PYTHON_PATH="python3"
 
@@ -14,7 +14,7 @@ KEYCHAIN_PATH="${SCRIPT_DIR}/data/keychain.json"
 BACKEND="aer"
 
 eval "$(${CONDA_PATH} shell.bash hook)"
-${CONDA_PATH} activate ${CONDA_ENV}
+conda activate ${CONDA_ENV}
 
 ${PYTHON_PATH} ${SCRIPT_DIR}/quackd/app.py \
     ${SLACK_TOKENS_PATH} ${BACKEND} \

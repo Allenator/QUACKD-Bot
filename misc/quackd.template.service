@@ -3,10 +3,11 @@ Description=Start QUACKD-Bot
 After=network.target
 
 [Service]
-DynamicUser=yes
+Type=simple
+User=<User>
 Restart=always
-RestartSec=300s
-ExecStart=<QUACKD-Bot>/run_app.sh
+RestartSec=1
+ExecStart=/bin/bash <QUACK-Bot>/run_app.sh
 
 [Install]
 WantedBy=multi-user.target
