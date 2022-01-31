@@ -25,8 +25,12 @@ parser.add_argument(
     help='specify backend for running B92 protocol'
 )
 parser.add_argument(
-    '--qi_auth_path',
+    '--qi_auth_path', '-a',
     help='specify path to the file containing QI authentication details'
+)
+parser.add_argument(
+    '--keychain_path', '-k',
+    help='specify path to the file containing a saved global keychain'
 )
 args = parser.parse_args()
 
@@ -47,7 +51,11 @@ else:
     else:
         raise ValueError(f'unknown backend specification "{args.backend}"')
 
-kc_global = KeyChain(backend=backend, **B92_DEFAULT_KWARGS)
+kc_global = KeyChain(
+    backend=backend,
+    keychain_path=args.keychain_path,
+    **B92_DEFAULT_KWARGS
+)
 
 
 def _tag(type, id):
@@ -114,7 +122,8 @@ def qkd(ack, respond, command):
     sent_key, recv_key = kc_global.add(src_id, members, src_id, dst_id, key, pbar)
 
     if len(sent_key) >= KEY_MIN_SIZE:
-        respond(f'Stored key `{sent_key}` after reconciliation.')
+        respond(f'Stored key `{sent_key}` '
+            f'({len(sent_key)} bits) after reconciliation.')
     else:
         respond(f'Shared key `{sent_key}` is discarded '
             f'(minimum length of {KEY_MIN_SIZE} required).')
@@ -123,7 +132,8 @@ def qkd(ack, respond, command):
         for m in members:
             app.client.chat_postMessage(
                 channel=m,
-                text=f'Received new key `{recv_key}` for {src_tag} ➡️ {dst_tag} via QKD!'
+                text=f'Received new key `{recv_key}` ({len(recv_key)} bits) '
+                    f'for {src_tag} ➡️ {dst_tag} via QKD!'
             )
     else:
         for m in members:
