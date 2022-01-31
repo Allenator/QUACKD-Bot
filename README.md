@@ -33,6 +33,7 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 ### Project structure
 
 - `credentials/`: Templates for credential storage for various services
+- `data/`: Runtime data such as saved keychains
 - `figures/`: Project demonstration figures
 - `videos/`: Project demonstration videos
 - `noise-rb/`: Code and data for performing noise characterization via randomized benchmarking (RB)
@@ -51,6 +52,10 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 
 ## Technical Overview
 
+### System Layout
+
+![qkd](figures/system-layout.jpg)
+
 **Slackbot interface** allows users to send and receive quantum keys generated via the B92 Protocol, encrypt messages, and send to individuals or groups.
 
 **Randomized benchmarking** examines characteristics of the qubit-specific noise channels, including crosstalk between qubits. It provides empirical guarantees for parallel QKD schemes on adjacent qubits.
@@ -67,25 +72,39 @@ To run QUACKD-Bot, invoke `run_app.sh` in the root directory. The file contains 
 
 ![crypto](figures/crypto.jpg)
 
-### Simultaneous Single-Qubit Randomized Benchmarking  Results
+### Simultaneous Single-Qubit Randomized Benchmarking Results
 
 ![rb](figures/rb.png)
 
-## Simple Video Demos
+## Demos
+
+### Videos
 
 - Sending a key to a person!
 
-![Sending a key to a person](https://github.com/Allenator/iQuHack-2022/blob/main/videos/One%20Party%20Edited.gif)
+![Sending a key to a person](https://github.com/Allenator/QUACKD-Bot/blob/main/videos/One%20Party%20Edited.gif)
 
 - Sending a key to a group!
 
-![Sending a key to a group](https://github.com/Allenator/iQuHack-2022/blob/main/videos/Multiple%20Parties.gif)
+![Sending a key to a group](https://github.com/Allenator/QUACKD-Bot/blob/main/videos/Multiple%20Parties.gif)
 
 - Checking your own keychain!
 
-![Checking your own keychain](https://github.com/Allenator/iQuHack-2022/blob/main/videos/Keychain%20Edited.gif)
+![Checking your own keychain](https://github.com/Allenator/QUACKD-Bot/blob/main/videos/Keychain%20Edited.gif)
 
-For other commands such as sending an encrypted message, viewing a message, and choosing a backend, please check how to view these instructions in the "How-To-Run" section.
+### Timing Results
+
+- Running on local Qiskit Aer simulator (~ 3 seconds)
+
+![rb](figures/aer_run.png)
+
+- Running on Quantum Inspire QX single-node simulator (~ 1 minute 30 seconds)
+
+![rb](figures/qi_sim_run.png)
+
+- Running on Quantum Inspire Starmon-5 superconducting device (~ 9 minutes)
+
+![rb](figures/qi_starmon_run.png)
 
 ## Other Examples and Functionality
 
@@ -119,7 +138,3 @@ B. R. (2021, April 28). A cascade information reconciliation tutorial. Hiking an
 ### Randomized Benchmarking
 
 Magesan, E., Gambetta, J. M., & Emerson, J. (2012). Characterizing quantum gates via randomized benchmarking. Physical Review A, 85(4), 042311.
-
-## Date
-
-January 30th, 2022
