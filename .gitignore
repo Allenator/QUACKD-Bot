@@ -4,6 +4,12 @@ credentials/*
 # Auth template
 !credentials/*.template.json
 
+# Runtime data
+data/*
+
+# Data template
+!data/*.template.json
+
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,jupyternotebooks
 
