@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONDA_PATH="conda"
+CONDA_PATH="/opt/miniconda3/condabin/conda"
 CONDA_ENV="quackd"
 PYTHON_PATH="python3"
 
